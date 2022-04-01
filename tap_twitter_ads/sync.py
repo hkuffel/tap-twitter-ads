@@ -15,6 +15,7 @@ from twitter_ads.utils import split_list
 
 from tap_twitter_ads.transform import transform_record, transform_report
 from tap_twitter_ads.streams import flatten_streams
+from tap_twitter_ads.client_rest import ADS_API_VERSION
 
 
 LOGGER = singer.get_logger()
@@ -90,7 +91,7 @@ def obj_to_dict(obj):
 # API SDK Requests: https://github.com/twitterdev/twitter-python-ads-sdk/blob/master/examples/manual_request.py
 # pylint: enable=line-too-long
 def get_resource(stream_name, client, path, params=None):
-    resource = '/{}/{}'.format(API_VERSION, path)
+    resource = '/{}/{}'.format(ADS_API_VERSION, path)
     try:
         request = Request(client, 'get', resource, params=params) #, stream=True)
     except Error as err:
@@ -102,7 +103,7 @@ def get_resource(stream_name, client, path, params=None):
 
 
 def post_resource(report_name, client, path, params=None, body=None):
-    resource = '/{}/{}'.format(API_VERSION, path)
+    resource = '/{}/{}'.format(ADS_API_VERSION, path)
     try:
         response = Request(client, 'post', resource, params=params, body=body).perform()
     except Error as err:
@@ -256,7 +257,7 @@ def sync_endpoint(client,
                     new_val = val.replace('{sub_type}', sub_type)
             new_params[key] = new_val
         LOGGER.info('Stream: {} - Request URL: {}/{}/{}'.format(
-            stream_name, ADS_API_URL, API_VERSION, path))
+            stream_name, ADS_API_URL, ADS_API_VERSION, path))
         LOGGER.info('Stream: {} - Request params: {}'.format(stream_name, new_params))
 
         # API Call
@@ -646,7 +647,7 @@ def post_queued_async_jobs(client, account_id, report_name, report_entity, entit
             'platform': platform_id
         }
         LOGGER.info('Report: {} - queued_job POST URL: {}/{}/{}'.format(
-            report_name, ADS_API_URL, API_VERSION, queued_job_path))
+            report_name, ADS_API_URL, ADS_API_VERSION, queued_job_path))
         LOGGER.info('Report: {} - queued_job params: {}'.format(
             report_name, queued_job_params))
 
@@ -686,7 +687,7 @@ def get_async_results_urls(client, account_id, report_name, queued_job_ids):
             'cursor': None
         }
         LOGGER.info('Report: {} - async_job_statuses GET URL: {}/{}/{}'.format(
-            report_name, ADS_API_URL, API_VERSION, async_job_statuses_path))
+            report_name, ADS_API_URL, ADS_API_VERSION, async_job_statuses_path))
         LOGGER.info('Report: {} - async_job_statuses params: {}'.format(
             report_name, async_job_statuses_params))
         async_job_statuses = get_resource('async_job_statuses', client, async_job_statuses_path, \
@@ -841,7 +842,7 @@ def sync_report(client,
                 'end_time': window_end_str
             }
             LOGGER.info('Report: {} - active_entities GET URL: {}/{}/{}'.format(
-                report_name, ADS_API_URL, API_VERSION, active_entities_path))
+                report_name, ADS_API_URL, ADS_API_VERSION, active_entities_path))
             LOGGER.info('Report: {} - active_entities params: {}'.format(
                 report_name, active_entities_params))
             active_entities = get_resource('active_entities', client, active_entities_path, \
